@@ -1,0 +1,32 @@
+# Maven, Gradle build output
+target/
+build/
+
+# IDE-specific files
+.idea/
+*.iml
+*.ipr
+.classpath
+.settings/
+.vscode/
+
+# Operating system specific files
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+# Log files
+*.log
+
+# Temporary files
+*.swp
+*.bak
+
+# Sensitive information (these should NOT be in version control)
+application.properties
+application.yml
+.env
+
+# JAR files
+*.jar
+*.war
+*.ear
