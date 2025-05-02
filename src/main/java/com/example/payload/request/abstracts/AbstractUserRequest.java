@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 
 
 
-@SuperBuilder // Odev : bu anotazyon oncesinde , @SuperBuilder in cozdugu sorun nasil cozuluyordu.
+@SuperBuilder //  bu anotazyon oncesinde , @SuperBuilder in cozdugu sorun nasil cozuluyordu.
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

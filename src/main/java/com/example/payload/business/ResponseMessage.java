@@ -1,6 +1,7 @@
 package com.example.payload.business;
 
 
+import com.example.payload.response.business.BookResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +19,6 @@ public class ResponseMessage <E>{
     private E object;
     private String message;
     private HttpStatus httpStatus;
+
 
 }
