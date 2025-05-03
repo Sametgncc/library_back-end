@@ -3,12 +3,15 @@ package com.example.service.user;
 import com.example.entity.concretes.user.User;
 import com.example.entity.enums.RoleType;
 import com.example.exception.BadRequestException;
+import com.example.exception.ConflictException;
 import com.example.exception.ResourceNotFoundException;
 import com.example.payload.business.ResponseMessage;
 import com.example.payload.mappers.UserMapper;
+import com.example.payload.request.authentication.LoginRequest;
 import com.example.payload.request.user.UserRequest;
 import com.example.payload.request.user.UserRequestWithoutPassword;
 import com.example.payload.response.abstracts.BaseUserResponse;
+import com.example.payload.response.user.AuthResponse;
 import com.example.repository.user.UserRepository;
 import com.example.service.helper.MethodHelper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
@@ -33,13 +34,25 @@ public class UserService {
     private final UserMapper userMapper;
 
 
-    public void saveUser(UserRequest userRequest) {
+    public ResponseMessage<String> saveUser(UserRequest userRequest) {
+
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new ConflictException("Bu email zaten kullanılıyor.");
+        }
+
         User user = new User();
         user.setUsername(userRequest.getUsername());
         user.setEmail(userRequest.getEmail());
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         userRepository.save(user);
+
+        return ResponseMessage.<String>builder()
+                .message("User registered successfully.")
+                .httpStatus(HttpStatus.CREATED)
+                .build();
     }
+
+
 
 
     public ResponseMessage<BaseUserResponse> getUserById(Long userId) {
@@ -76,8 +89,8 @@ public class UserService {
         user.setUsername(userRequestWithoutPassword.getUsername());
         user.setEmail(userRequestWithoutPassword.getEmail());
 
-        // Veritabanına kayit
-        userRepository.saveAndFlush(user); // saveAndFlush() değişiklikleri hemen kaydeder.
+
+        userRepository.saveAndFlush(user);
 
         // okey mesaji
         return ResponseEntity.ok("Kullanıcı güncellendi");
@@ -135,6 +148,23 @@ public class UserService {
                 .httpStatus(HttpStatus.OK)
                 .object(userMapper.mapUserToUserResponse(savedUser))
                 .build();
+    }
+
+
+    public ResponseMessage<AuthResponse> login(LoginRequest loginRequest) {
+
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + loginRequest.getEmail()));
+
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            throw new BadRequestException("Invalid password");
+        }
+        return ResponseMessage.<AuthResponse>builder()
+                .message("Login successful")
+                .httpStatus(HttpStatus.OK)
+                .build();
+
+
     }
 
 

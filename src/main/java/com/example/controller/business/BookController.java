@@ -22,7 +22,7 @@ public class BookController {
 
 
         // Kitapları listele
-        @GetMapping("/")
+        @GetMapping
         public ResponseEntity<List<BookResponse>> getAllBooks() {
             return ResponseEntity.ok(bookService.getAllBooks());
         }
@@ -34,7 +34,7 @@ public class BookController {
         }
 
         // Kitap ekleme
-        @PostMapping("/saveBook")
+        @PostMapping("/saveBook") // http://localhost:8081/book/saveBook
         public ResponseMessage<BookResponse> addBook(@RequestBody @Valid BookRequest bookRequest) {
             return bookService.addBook(bookRequest);
         }

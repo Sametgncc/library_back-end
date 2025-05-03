@@ -36,5 +36,4 @@ public class Borrow {
 
     private boolean isReturned;
 
-    private double penaltyFee;
 }

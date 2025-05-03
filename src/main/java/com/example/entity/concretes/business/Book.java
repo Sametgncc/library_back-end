@@ -23,12 +23,6 @@ public class Book {
 
     private String author;
 
-    private String publisher;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", timezone = "Europe/Istanbul")
-    private LocalDate publishDate;
-
-    private Integer quantity;
 
     // Kategori ile ilişki
     @ManyToOne

@@ -11,8 +11,8 @@ import jakarta.validation.constraints.NotNull;
 @Data
 public class LoginRequest {
 
-    @NotNull(message = "Username must be not empty")
-    private String username;
+    @NotNull(message = "Email must be not empty")
+    private String email;
     @NotNull(message = "Password must be not empty")
     private String password;
 

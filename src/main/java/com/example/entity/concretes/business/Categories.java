@@ -21,12 +21,5 @@ public class Categories {
     @Column(nullable = false, unique = true)
     private String name;
 
-    // Alt kategoriler
-    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
-    private Set<Categories> subCategories;
 
-    // Üst kategori
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private Categories parentCategory;
 }

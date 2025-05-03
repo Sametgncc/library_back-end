@@ -1,12 +1,14 @@
 package com.example.payload.request.business;
 
+import com.example.entity.concretes.business.Categories;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+
 public class BookRequest {
 
     @NotBlank(message = "Kitap adı boş olamaz")
@@ -15,14 +17,15 @@ public class BookRequest {
     @NotBlank(message = "Yazar adı boş olamaz")
     private String author;
 
+    private Long categoryId;
 
-    private Integer publicationYear;
+    private String publicationYear;
 
     @NotBlank(message = "ISBN boş olamaz")
     private String isbn;
 
-    @NotBlank(message = "Kategori boş olamaz")
-    private String category;
+    @NotNull
+    private Categories category;
 
 
 
