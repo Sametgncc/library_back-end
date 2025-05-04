@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class BorrowService {
 
     private final BorrowRepository borrowRepository;
-    private final UserRepository userRepository;
     private final BookRepository bookRepository;
 
     private final int MAX_BOOKS_PER_USER = 3;
