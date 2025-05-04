@@ -2,8 +2,6 @@ package com.example.payload.response.business;
 
 
 
-import com.example.entity.concretes.business.Categories;
-
 import lombok.*;
 
 

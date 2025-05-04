@@ -1,8 +1,10 @@
 package com.example.controller.business;
 
+import com.example.entity.concretes.business.Book;
 import com.example.payload.business.ResponseMessage;
 import com.example.payload.request.business.BookRequest;
 import com.example.payload.response.business.BookResponse;
+import com.example.repository.business.BookRepository;
 import com.example.service.business.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    private final BookRepository bookRepository;
 
 
 
@@ -34,23 +37,50 @@ public class BookController {
         }
 
         // Kitap ekleme
-        @PostMapping("/saveBook") // http://localhost:8081/book/saveBook
+        @PostMapping("/save") // http://localhost:8081/book/saveBook
         public ResponseMessage<BookResponse> addBook(@RequestBody @Valid BookRequest bookRequest) {
             return bookService.addBook(bookRequest);
         }
 
-        // Kitap güncelleme
+    @PostMapping("/saveAll")
+    public ResponseEntity<ResponseMessage<String>> saveAllBooks(@RequestBody List<BookRequest> bookRequests) {
+        if (bookRequests == null || bookRequests.isEmpty()) {
+            return ResponseEntity.badRequest().body(
+                    ResponseMessage.<String>builder()
+                            .message("Kitap listesi boş olamaz.")
+                            .httpStatus(HttpStatus.BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        List<Book> books = bookRequests.stream()
+                .map(req -> Book.builder()
+                        .title(req.getTitle())
+                        .author(req.getAuthor())
+                        .isbn(req.getIsbn())
+                        .category(req.getCategory())
+                        .build())
+                .toList();
+
+        bookRepository.saveAll(books);
+
+        return ResponseEntity.ok(
+                ResponseMessage.<String>builder()
+                        .message("Tüm kitaplar başarıyla kaydedildi.")
+                        .httpStatus(HttpStatus.OK)
+                        .build()
+        );
+    }
+
+
+
+
+    // Kitap güncelleme
         @PutMapping("/updateBook/{id}")
         public ResponseMessage<BookResponse> updateBook(@PathVariable Long id, @RequestBody @Valid BookRequest bookRequest) {
             return bookService.updateBook(id, bookRequest);
         }
 
-        // Kitap silme
-        @DeleteMapping("/deleteBook/{id}")
-        public ResponseMessage<Integer> deleteBook(@PathVariable Long id) {
-            bookService.deleteBook(id);
-            return new ResponseMessage<>(HttpStatus.NO_CONTENT.value(), "kitap silindi", HttpStatus.OK);
-        }
 }
 
 

@@ -1,21 +1,17 @@
 package com.example.service.business;
 
 import com.example.entity.concretes.business.Book;
-import com.example.entity.concretes.business.Categories;
-import com.example.exception.ResourceNotFoundException;
 import com.example.payload.business.ResponseMessage;
 import com.example.payload.mappers.BookMapper;
 import com.example.payload.request.business.BookRequest;
 import com.example.payload.response.business.BookResponse;
 import com.example.repository.business.BookRepository;
-import com.example.repository.business.CategoryRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,43 +19,30 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final CategoryRepository categoryRepository;
+
 
     // BookMapper'ı static metodlar ile çağıracağımız için burada inject etmeye gerek yok.
     // private final BookMapper bookMapper; // Bu satırı kaldırabilirsiniz
 
     // Kitap eklemek için
     public ResponseMessage<BookResponse> addBook(BookRequest bookRequest) {
-        // 1. Kategori kontrolü
-        Categories category = categoryRepository.findById(bookRequest.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı: " + bookRequest.getCategoryId()));
 
-        // 2. Book nesnesini oluştur
-        Book book = Book.builder()
-                .title(bookRequest.getTitle())
-                .author(bookRequest.getAuthor())
-                .category(category)
-                .build();
+        // Yeni kitabı oluştur
+        Book newBook = BookMapper.mapToEntity(bookRequest); // BookMapper'ı doğrudan kullanıyoruz
 
-        // 3. Kitabı kaydet
-        Book savedBook = bookRepository.save(book);
+        // Kitabı veritabanına kaydet
+        Book savedBook = bookRepository.save(newBook);
 
-        // 4. Response objesini oluştur
-        BookResponse bookResponse = BookResponse.builder()
-                .id(savedBook.getId())
-                .title(savedBook.getTitle())
-                .author(savedBook.getAuthor())
-                .category(category.getName())
-                .build();
+        // Kaydedilen kitabı response formatında dönüştür
+        BookResponse bookResponse = BookMapper.mapToResponse(savedBook); // Doğrudan BookMapper'ı kullan
 
+        // ResponseMessage dön
         return ResponseMessage.<BookResponse>builder()
-                .message("Kitap başarıyla eklendi.")
-                .httpStatus(HttpStatus.CREATED)
                 .object(bookResponse)
+                .message("Book added successfully")
+                .httpStatus(HttpStatus.CREATED)
                 .build();
     }
-
-
 
     // Tüm kitapları getirmek için
     public List<BookResponse> getAllBooks() {
@@ -105,13 +88,5 @@ public class BookService {
                 .build();
     }
 
-    // Kitap silmek için
-    public void deleteBook(Long id) {
-        // Kitap bulunmazsa hata fırlat
-        Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        // Kitap sil
-        bookRepository.delete(existingBook);
-    }
 }

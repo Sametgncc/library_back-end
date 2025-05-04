@@ -21,11 +21,9 @@ public class Book {
 
     private String title;
 
+    private String isbn;
+
     private String author;
 
-
-    // Kategori ile ilişki
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Categories category;
+    private String category;
 }
