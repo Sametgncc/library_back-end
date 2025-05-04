@@ -1,12 +1,14 @@
 package com.example.service.business;
 
 import com.example.entity.concretes.business.Borrow;
-import com.example.payload.business.ResponseMessage;
+import com.example.entity.concretes.business.Payments;
 import com.example.payload.request.business.BorrowRequest;
 import com.example.payload.response.business.BorrowResponse;
+import com.example.payload.response.business.PaymentsResponse;
 import com.example.repository.business.BorrowRepository;
+import com.example.repository.business.PaymentsRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,57 +21,40 @@ import java.util.stream.Collectors;
 public class PaymentsService {
 
     private final BorrowRepository borrowRepository;
+    private final PaymentsRepository paymentsRepository;
 
-    public ResponseMessage<BorrowResponse> createPayments(BorrowRequest borrowRequest) {
-        try {
-            // Ödünç alınan kitabın bilgilerini kaydet
-            Borrow borrow = new Borrow();
-            borrow.setBookId(borrowRequest.getBookId());
-            borrow.setTitle(borrowRequest.getTitle());
-            borrow.setAuthor(borrowRequest.getAuthor());
-            borrow.setCategory(borrowRequest.getCategory());
-            borrow.setStartDate(borrowRequest.getStartDate());
-            borrow.setEndDate(borrowRequest.getEndDate());
-            borrowRepository.save(borrow);
+    public PaymentsResponse createPayments(BorrowRequest borrowRequest) {
+        // BorrowRequest'ten gerekli bilgileri al
+        String title = borrowRequest.getTitle();
+        String author = borrowRequest.getAuthor();
+        LocalDate endDate = borrowRequest.getEndDate();
 
-            // Sistem tarihini al
-            LocalDate today = LocalDate.now();
-            LocalDate endDate = borrowRequest.getEndDate();
+        // Sistem tarihini al
+        LocalDate today = LocalDate.now();
 
-            // Ceza kontrolü
-            long overdueDays = ChronoUnit.DAYS.between(endDate, today);
-            double penalty = 0.0;
-            if (overdueDays > 0) {
-                penalty = overdueDays * 10.0; // Gün başına 10 birim ceza
-            }
+        // Gecikme gün sayısını hesapla
+        long overdueDays = ChronoUnit.DAYS.between(endDate, today);
 
-            // Yanıt oluştur
-            BorrowResponse borrowResponse = BorrowResponse.builder()
-                    .id(borrow.getId())
-                    .bookId(borrow.getBookId())
-                    .bookTitle(borrow.getTitle())
-                    .bookAuthor(borrow.getAuthor())
-                    .bookCategory(borrow.getCategory())
-                    .startDate(borrow.getStartDate())
-                    .endDate(borrow.getEndDate())
-                    .build();
+        // Ceza hesaplama (gün başına 10 birim)
+        long debtAmount = overdueDays > 0 ? overdueDays * 10 : 0;
 
-            String message = overdueDays > 0
-                    ? "Ceza uygulanmıştır. Toplam ceza: " + penalty + " birim."
-                    : "Kitap zamanında teslim edilmiştir.";
+        // Ödeme bilgilerini kaydet
+        Payments payment = Payments.builder()
+                .title(title)
+                .author(author)
+                .daysLate(overdueDays > 0 ? overdueDays : 0)
+                .debtAmount(debtAmount)
+                .build();
+        paymentsRepository.save(payment);
 
-            return ResponseMessage.<BorrowResponse>builder()
-                    .object(borrowResponse)
-                    .message(message)
-                    .httpStatus(HttpStatus.OK)
-                    .build();
-        } catch (Exception e) {
-            return ResponseMessage.<BorrowResponse>builder()
-                    .object(null)
-                    .message("İşlem sırasında bir hata oluştu: " + e.getMessage())
-                    .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .build();
-        }
+        // Yanıt oluştur
+        return PaymentsResponse.builder()
+                .id(payment.getId())
+                .title(payment.getTitle())
+                .author(payment.getAuthor())
+                .daysLate(payment.getDaysLate())
+                .debtAmount(payment.getDebtAmount())
+                .build();
     }
 
     // Tüm ödünç alınan kitapları getir
@@ -86,9 +71,29 @@ public class PaymentsService {
                 .bookId(borrow.getBookId())
                 .bookTitle(borrow.getTitle())
                 .bookAuthor(borrow.getAuthor())
-                .bookCategory(borrow.getCategory())
                 .startDate(borrow.getStartDate())
                 .endDate(borrow.getEndDate())
                 .build();
+    }
+
+    public void addOverduePayments() {
+        LocalDate today = LocalDate.now();
+        List<Borrow> overdueBorrows = borrowRepository.findAll().stream()
+                .filter(borrow -> borrow.getEndDate().isBefore(today))
+                .collect(Collectors.toList());
+
+        for (Borrow borrow : overdueBorrows) {
+            long overdueDays = ChronoUnit.DAYS.between(borrow.getEndDate(), today);
+            long debtAmount = overdueDays * 10; // Gün başına 10 birim ceza
+
+            Payments payment = Payments.builder()
+                    .title(borrow.getTitle())
+                    .author(borrow.getAuthor())
+                    .daysLate(overdueDays)
+                    .debtAmount(debtAmount)
+                    .build();
+
+            paymentsRepository.save(payment);
+        }
     }
 }

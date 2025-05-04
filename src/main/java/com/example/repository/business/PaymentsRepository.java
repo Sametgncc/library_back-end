@@ -8,6 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 
-public interface PaymentsRepository extends JpaRepository<Borrow, Long> {
-    List<Borrow> findByBookId(Long bookId);
+public interface PaymentsRepository extends JpaRepository<Payments, Long> {
 }
