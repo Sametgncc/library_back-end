@@ -16,18 +16,15 @@ public class BorrowResponse {
 
     private Long id;
 
-    private Long userId;
-    private String userName;
-
     private Long bookId;
-    private String bookName;
+    private String bookTitle;
     private String bookAuthor;
+    private String bookCategory;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Europe/Istanbul")
-    private LocalDate borrowDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Istanbul")
+    private LocalDate startDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Europe/Istanbul")
-    private LocalDate returnDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Istanbul")
+    private LocalDate endDate;
 
-    private boolean isReturned;
 }

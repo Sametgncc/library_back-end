@@ -25,7 +25,7 @@ public class BorrowController {
         return ResponseEntity.ok(borrowService.createBorrow(borrowRequest));
     }
 
-    // Return a borrowed book
+    // Controller'daki returnBook metodu
     @PutMapping("/return")
     public ResponseEntity<ResponseMessage<BorrowResponse>> returnBook(@Valid @RequestBody ReturnBookRequest returnBookRequest) {
         return ResponseEntity.ok(borrowService.returnBook(returnBookRequest));
@@ -37,7 +37,7 @@ public class BorrowController {
         return ResponseEntity.ok(borrowService.getAllBorrows());
     }
 
-    // Get active borrows
+   /* // Get active borrows
     @GetMapping("/active")
     public ResponseEntity<List<BorrowResponse>> getActiveBorrows() {
         return ResponseEntity.ok(borrowService.getActiveBorrows());
@@ -53,7 +53,7 @@ public class BorrowController {
     @GetMapping("/user/{userId}/active")
     public ResponseEntity<List<BorrowResponse>> getActiveBorrowsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(borrowService.getActiveBorrowsByUserId(userId));
-    }
+    }*/
 
     // Get borrow by id
     @GetMapping("/{id}")

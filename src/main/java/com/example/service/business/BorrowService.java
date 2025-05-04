@@ -31,33 +31,21 @@ public class BorrowService {
     private final int MAX_BOOKS_PER_USER = 3;
 
     public ResponseMessage<BorrowResponse> createBorrow(BorrowRequest borrowRequest) {
-        User user = userRepository.findById(borrowRequest.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + borrowRequest.getUserId()));
 
         Book book = bookRepository.findById(borrowRequest.getBookId())
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + borrowRequest.getBookId()));
 
 
-        int activeBorrows = borrowRepository.countActiveBooksByUserId(user.getId());
-        if (activeBorrows >= MAX_BOOKS_PER_USER) {
-            throw new BadRequestException("User has already borrowed maximum number of books: " + MAX_BOOKS_PER_USER);
-        }
-
-
         List<Borrow> bookBorrows = borrowRepository.findByBookId(book.getId());
-        boolean isBookBorrowed = bookBorrows.stream()
-                .anyMatch(borrow -> !borrow.isReturned());
-        if (isBookBorrowed) {
-            throw new BadRequestException("Book is already borrowed by another user");
-        }
 
         // Create borrow record
         Borrow borrow = Borrow.builder()
-                .user(user)
-                .book(book)
-                .borrowDate(borrowRequest.getBorrowDate() != null ? borrowRequest.getBorrowDate() : LocalDate.now())
-                .returnDate(borrowRequest.getReturnDate() != null ? borrowRequest.getReturnDate() : LocalDate.now().plusDays(15))
-                .isReturned(false)
+                .bookId(book.getId())
+                .title(book.getTitle())
+                .author(book.getAuthor())
+                .category(book.getCategory())
+                .startDate(borrowRequest.getStartDate() != null ? borrowRequest.getStartDate() : LocalDate.now())
+                .endDate(borrowRequest.getEndDate() != null ? borrowRequest.getEndDate() : LocalDate.now().plusDays(15))
                 .build();
 
         Borrow savedBorrow = borrowRepository.save(borrow);
@@ -74,17 +62,13 @@ public class BorrowService {
         Borrow borrow = borrowRepository.findById(returnBookRequest.getBorrowId())
                 .orElseThrow(() -> new ResourceNotFoundException("Borrow record not found with id: " + returnBookRequest.getBorrowId()));
 
-        if (borrow.isReturned()) {
-            throw new BadRequestException("Book is already returned");
-        }
-
-        borrow.setReturned(true);
-        Borrow savedBorrow = borrowRepository.save(borrow);
+        // Kayıt siliniyor
+        borrowRepository.delete(borrow);
 
         return ResponseMessage.<BorrowResponse>builder()
-                .message("Book successfully returned")
+                .message("Book successfully returned and record deleted")
                 .httpStatus(HttpStatus.OK)
-                .object(mapToBorrowResponse(savedBorrow))
+                .object(mapToBorrowResponse(borrow))
                 .build();
     }
 
@@ -95,7 +79,7 @@ public class BorrowService {
                 .collect(Collectors.toList());
     }
 
-    // Get active borrows
+   /* // Get active borrows
     public List<BorrowResponse> getActiveBorrows() {
         return borrowRepository.findByIsReturnedFalse().stream()
                 .map(this::mapToBorrowResponse)
@@ -124,7 +108,7 @@ public class BorrowService {
         return borrowRepository.findActiveBooksByUserId(userId).stream()
                 .map(this::mapToBorrowResponse)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     public BorrowResponse getBorrowById(Long id) {
         Borrow borrow = borrowRepository.findById(id)
@@ -136,12 +120,12 @@ public class BorrowService {
     private BorrowResponse mapToBorrowResponse(Borrow borrow) {
         return BorrowResponse.builder()
                 .id(borrow.getId())
-                .userId(borrow.getUser().getId())
-                .bookId(borrow.getBook().getId())
-                .bookAuthor(borrow.getBook().getAuthor())
-                .borrowDate(borrow.getBorrowDate())
-                .returnDate(borrow.getReturnDate())
-                .isReturned(borrow.isReturned())
+                .bookId(borrow.getBookId())
+                .bookTitle(borrow.getTitle())
+                .bookAuthor(borrow.getAuthor())
+                .bookCategory(borrow.getCategory())
+                .startDate(borrow.getStartDate())
+                .endDate(borrow.getEndDate())
                 .build();
     }
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Table(name = "t_borrow")
@@ -20,20 +21,23 @@ public class Borrow {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne  // Bir kullanıcı birçok ödünç alabilir
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(nullable = false)
+    private Long bookId;
 
-    @ManyToOne  // Bir kitap birden fazla kez ödünç alınabilir
-    @JoinColumn(name = "book_id")
-    private Book book;
+    @Column(nullable = false)
+    private String title;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Europe/Istanbul")
-    private LocalDate borrowDate;
+    @Column(nullable = false)
+    private String author;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Europe/Istanbul")
-    private LocalDate returnDate;
+    @Column(nullable = false)
+    private String category;
 
-    private boolean isReturned;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Istanbul")
+    private LocalDate startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Istanbul")
+    private LocalDate endDate;
+
 
 }

@@ -16,15 +16,21 @@ import java.time.LocalDate;
 @Builder
 public class BorrowRequest {
 
-    @NotNull(message = "User ID cannot be empty")
-    private Long userId;
-
-    @NotNull(message = "Book ID cannot be empty")
+    @NotNull(message =  "Book Id cannot be empty")
     private Long bookId;
+    @NotNull(message = "Title cannot be empty")
+    private String title;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Europe/Istanbul")
-    private LocalDate borrowDate;
+    @NotNull(message = "Author cannot be empty")
+    private String author;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "Europe/Istanbul")
-    private LocalDate returnDate;
+    @NotNull(message = "Category cannot be empty")
+    private String category;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Istanbul")
+    private LocalDate startDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Europe/Istanbul")
+    private LocalDate endDate;
+
 }
