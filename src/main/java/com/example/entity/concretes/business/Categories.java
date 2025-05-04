@@ -1,4 +1,4 @@
-package com.example.entity.concretes.business;
+/*package com.example.entity.concretes.business;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,7 +6,6 @@ import lombok.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "t_category")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,4 +21,4 @@ public class Categories {
     private String name;
 
 
-}
+}*/

@@ -35,13 +35,13 @@ public class UserController {
         return ResponseEntity.ok("Giriş başarılı");
     }
 
-    //deleteUser() *********************************************************
+   /* //deleteUser() *********************************************************
     @DeleteMapping("/delete/{id}") //http://localhost:8081/user/delete/3
     //@PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> deleteUserById(@PathVariable Long id ,
                                                  HttpServletRequest httpServletRequest){
         return ResponseEntity.ok(userService.deleteUserById(id , httpServletRequest)) ;
-    }
+    }*/
 
 
 

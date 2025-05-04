@@ -1,4 +1,4 @@
-package com.example.entity.concretes.user;
+/*package com.example.entity.concretes.user;
 
 
 
@@ -30,4 +30,4 @@ public class UserRole {
 
 
     String roleName;
-}
+}*/

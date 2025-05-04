@@ -19,13 +19,20 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column(nullable = false)
     private String author;
 
+    @Column(nullable = false)
+    private String category;
 
-    // Kategori ile ilişki
+    private String status = "Mevcut";
+
+
+    /*// Kategori ile ilişki
     @ManyToOne
     @JoinColumn(name = "category_id")
-    private Categories category;
+    private Categories category;*/
 }

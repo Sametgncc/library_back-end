@@ -1,14 +1,16 @@
 package com.example.service.business;
 
 import com.example.entity.concretes.business.Book;
-import com.example.entity.concretes.business.Categories;
+//import com.example.entity.concretes.business.Categories;
+//import com.example.entity.concretes.business.Categories;
 import com.example.exception.ResourceNotFoundException;
 import com.example.payload.business.ResponseMessage;
 import com.example.payload.mappers.BookMapper;
 import com.example.payload.request.business.BookRequest;
 import com.example.payload.response.business.BookResponse;
 import com.example.repository.business.BookRepository;
-import com.example.repository.business.CategoryRepository;
+//import com.example.repository.business.CategoryRepository;
+//import com.example.repository.business.CategoryRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,22 +25,23 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final CategoryRepository categoryRepository;
+    //private final CategoryRepository categoryRepository;
 
     // BookMapper'ı static metodlar ile çağıracağımız için burada inject etmeye gerek yok.
     // private final BookMapper bookMapper; // Bu satırı kaldırabilirsiniz
 
     // Kitap eklemek için
     public ResponseMessage<BookResponse> addBook(BookRequest bookRequest) {
-        // 1. Kategori kontrolü
-        Categories category = categoryRepository.findById(bookRequest.getCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı: " + bookRequest.getCategoryId()));
+        /*// 1. Kategori kontrolü
+        Categories category = categoryRepository.findById(bookRequest.getCategory())
+                .orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı: " + bookRequest.getCategory()));*/
 
         // 2. Book nesnesini oluştur
         Book book = Book.builder()
                 .title(bookRequest.getTitle())
                 .author(bookRequest.getAuthor())
-                .category(category)
+                .category(bookRequest.getCategory())
+                .status("Mevcut")
                 .build();
 
         // 3. Kitabı kaydet
@@ -49,7 +52,7 @@ public class BookService {
                 .id(savedBook.getId())
                 .title(savedBook.getTitle())
                 .author(savedBook.getAuthor())
-                .category(category.getName())
+                .category(savedBook.getCategory())
                 .build();
 
         return ResponseMessage.<BookResponse>builder()
@@ -89,7 +92,7 @@ public class BookService {
         // Mevcut kitabı güncelle
         existingBook.setTitle(bookRequest.getTitle());
         existingBook.setAuthor(bookRequest.getAuthor());
-        existingBook.setCategory(bookRequest.getCategory());
+        //existingBook.setCategory(bookRequest.getCategory());
 
         // Güncellenen kitabı kaydet
         Book updatedBook = bookRepository.save(existingBook);

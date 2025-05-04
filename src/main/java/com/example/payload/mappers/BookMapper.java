@@ -15,6 +15,7 @@ public class BookMapper {
                 .title(request.getTitle())
                 .author(request.getAuthor())
                 .category(request.getCategory())
+                .status("Mevcut")
                 .build();
     }
 
@@ -24,7 +25,8 @@ public class BookMapper {
                 .id(book.getId())
                 .title(book.getTitle())
                 .author(book.getAuthor())
-                .category(book.getCategory() != null ? book.getCategory().getName() : null)
+                .category(book.getCategory())
+                //.category(book.getCategory() != null ? book.getCategory().getName() : null)
                 .build();
     }
 

@@ -106,10 +106,10 @@ public class UserService {
         User currentUser = userRepository.findByUsername(username); // Silme işlemini talep eden user
 
         // Admin kullanıcıları her kullanıcıyı silebilir
-        if (currentUser.getUserRole().getRoleType() == RoleType.ADMIN) {
+       /* if (currentUser.getUserRole().getRoleType() == RoleType.ADMIN) {
             userRepository.deleteById(id);
             return "Kullanıcı başarıyla silindi.";
-        }
+        }*/
 
         // Kullanıcı sadece kendi hesabını silebilir
         if (currentUser.getUsername().equals(userToDelete.getUsername())) {
@@ -137,7 +137,7 @@ public class UserService {
         }
 
         // Kullanıcı rolünü koru (eski rol korunuyor)
-        updatedUser.setUserRole(user.getUserRole());
+       // updatedUser.setUserRole(user.getUserRole());
 
         // Güncellenmiş kullanıcıyı veritabanına kaydet
         User savedUser = userRepository.save(updatedUser);

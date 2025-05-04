@@ -28,8 +28,8 @@ public class User {
 
     private String password;
 
-    @OneToOne
+    /*@OneToOne
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private UserRole userRole;
+    private UserRole userRole;*/
 
 }
