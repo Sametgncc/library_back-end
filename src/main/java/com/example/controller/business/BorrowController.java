@@ -32,28 +32,10 @@ public class BorrowController {
     }
 
     // Get all borrows
-    @GetMapping("/all")
+    @GetMapping("/info") // http://localhost:8081/borrow/info
     public ResponseEntity<List<BorrowResponse>> getAllBorrows() {
         return ResponseEntity.ok(borrowService.getAllBorrows());
     }
-
-   /* // Get active borrows
-    @GetMapping("/active")
-    public ResponseEntity<List<BorrowResponse>> getActiveBorrows() {
-        return ResponseEntity.ok(borrowService.getActiveBorrows());
-    }
-
-    // Get borrows by user id
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<BorrowResponse>> getBorrowsByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(borrowService.getBorrowsByUserId(userId));
-    }
-
-    // Get active borrows by user id
-    @GetMapping("/user/{userId}/active")
-    public ResponseEntity<List<BorrowResponse>> getActiveBorrowsByUserId(@PathVariable Long userId) {
-        return ResponseEntity.ok(borrowService.getActiveBorrowsByUserId(userId));
-    }*/
 
     // Get borrow by id
     @GetMapping("/{id}")

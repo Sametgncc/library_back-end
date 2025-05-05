@@ -10,7 +10,9 @@ import lombok.*;
 public class PaymentsResponse {
     private Long id;
     private String title;
+    private Long borrowId;
     private String author;
     private Long daysLate;
-    private Long debtAmount;
+    private Long amount;
+    private String message;
 }

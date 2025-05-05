@@ -3,14 +3,18 @@ package com.example.payload.request.business;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-
+@Builder(toBuilder = true)
 public class PaymentsRequest {
+    @NotBlank(message = "Book Id boş olamaz")
+    private Long borrowId;
+
     @NotBlank(message = "Kitap adı boş olamaz")
     private String title;
 
@@ -21,5 +25,5 @@ public class PaymentsRequest {
     private Long daysLate;
 
     @NotNull(message = " Borç boş olamaz.")
-    private Long debtAmount;
+    private Long amount;
 }

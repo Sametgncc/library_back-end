@@ -65,7 +65,6 @@ public class BorrowService {
         borrowRepository.delete(borrow);
 
         return ResponseMessage.<BorrowResponse>builder()
-                .message("Book successfully returned and record deleted")
                 .httpStatus(HttpStatus.OK)
                 .object(mapToBorrowResponse(borrow))
                 .build();
@@ -78,36 +77,6 @@ public class BorrowService {
                 .collect(Collectors.toList());
     }
 
-   /* // Get active borrows
-    public List<BorrowResponse> getActiveBorrows() {
-        return borrowRepository.findByIsReturnedFalse().stream()
-                .map(this::mapToBorrowResponse)
-                .collect(Collectors.toList());
-    }
-
-    // Get borrows by user id
-    public List<BorrowResponse> getBorrowsByUserId(Long userId) {
-        // Check if user exists
-        if (!userRepository.existsById(userId)) {
-            throw new ResourceNotFoundException("User not found with id: " + userId);
-        }
-
-        return borrowRepository.findByUserId(userId).stream()
-                .map(this::mapToBorrowResponse)
-                .collect(Collectors.toList());
-    }
-
-    // Get active borrows by user id
-    public List<BorrowResponse> getActiveBorrowsByUserId(Long userId) {
-        // Check if user exists
-        if (!userRepository.existsById(userId)) {
-            throw new ResourceNotFoundException("User not found with id: " + userId);
-        }
-
-        return borrowRepository.findActiveBooksByUserId(userId).stream()
-                .map(this::mapToBorrowResponse)
-                .collect(Collectors.toList());
-    }*/
 
     public BorrowResponse getBorrowById(Long id) {
         Borrow borrow = borrowRepository.findById(id)
@@ -118,12 +87,8 @@ public class BorrowService {
 
     private BorrowResponse mapToBorrowResponse(Borrow borrow) {
         return BorrowResponse.builder()
-                .id(borrow.getId())
-                .bookId(borrow.getBookId())
                 .bookTitle(borrow.getTitle())
                 .bookAuthor(borrow.getAuthor())
-                .bookCategory(borrow.getCategory())
-                .startDate(borrow.getStartDate())
                 .endDate(borrow.getEndDate())
                 .build();
     }

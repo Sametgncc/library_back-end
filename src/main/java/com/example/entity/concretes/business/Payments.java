@@ -15,6 +15,10 @@ public class Payments {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @Column(nullable = false)
+    private Long borrowId;
+
     @Column(nullable = false)
     private String title;
 
@@ -24,5 +28,6 @@ public class Payments {
     @Column(nullable = false)
     private Long daysLate;
 
-    private Long debtAmount;
+    private Long amount;
+
 }
