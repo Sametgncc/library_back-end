@@ -30,9 +30,4 @@ public class Book {
 
     private String status = "Mevcut";
 
-
-    /*// Kategori ile ilişki
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Categories category;*/
 }
