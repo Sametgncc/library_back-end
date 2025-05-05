@@ -26,7 +26,6 @@ public class BookMapper {
                 .title(book.getTitle())
                 .author(book.getAuthor())
                 .category(book.getCategory())
-                //.category(book.getCategory() != null ? book.getCategory().getName() : null)
                 .build();
     }
 

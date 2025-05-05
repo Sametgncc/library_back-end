@@ -1,16 +1,15 @@
 package com.example.service.business;
 
 import com.example.entity.concretes.business.Book;
-//import com.example.entity.concretes.business.Categories;
-//import com.example.entity.concretes.business.Categories;
+import com.example.entity.concretes.business.FavoriteBook;
 import com.example.exception.ResourceNotFoundException;
 import com.example.payload.business.ResponseMessage;
 import com.example.payload.mappers.BookMapper;
 import com.example.payload.request.business.BookRequest;
 import com.example.payload.response.business.BookResponse;
 import com.example.repository.business.BookRepository;
-//import com.example.repository.business.CategoryRepository;
-//import com.example.repository.business.CategoryRepository;
+import com.example.repository.business.FavoriteBookRepository;
+import com.example.repository.user.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,18 +24,11 @@ import java.util.stream.Collectors;
 public class BookService {
 
     private final BookRepository bookRepository;
-    //private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+    private final FavoriteBookRepository favoriteBookRepository;
 
-    // BookMapper'ı static metodlar ile çağıracağımız için burada inject etmeye gerek yok.
-    // private final BookMapper bookMapper; // Bu satırı kaldırabilirsiniz
-
-    // Kitap eklemek için
     public ResponseMessage<BookResponse> addBook(BookRequest bookRequest) {
-        /*// 1. Kategori kontrolü
-        Categories category = categoryRepository.findById(bookRequest.getCategory())
-                .orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı: " + bookRequest.getCategory()));*/
 
-        // 2. Book nesnesini oluştur
         Book book = Book.builder()
                 .title(bookRequest.getTitle())
                 .author(bookRequest.getAuthor())
@@ -44,10 +36,10 @@ public class BookService {
                 .status("Mevcut")
                 .build();
 
-        // 3. Kitabı kaydet
+
         Book savedBook = bookRepository.save(book);
 
-        // 4. Response objesini oluştur
+
         BookResponse bookResponse = BookResponse.builder()
                 .id(savedBook.getId())
                 .title(savedBook.getTitle())
@@ -64,43 +56,40 @@ public class BookService {
 
 
 
-    // Tüm kitapları getirmek için
+
     public List<BookResponse> getAllBooks() {
-        // Kitapları veritabanından çek
+
         List<Book> bookList = bookRepository.findAll();
 
-        // Kitapları response formatında dönüştür
+
         return bookList.stream()
-                .map(BookMapper::mapToResponse)  // BookMapper'ı doğrudan kullanıyoruz
+                .map(BookMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // ID ile kitap getirmek için
+
     public BookResponse getBookById(Long id) {
-        // Kitap bulunmazsa hata fırlatılabilir
+
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        return BookMapper.mapToResponse(book); // Doğrudan BookMapper'ı kullan
+        return BookMapper.mapToResponse(book);
     }
 
-    // Kitap güncellemek için
+
     public ResponseMessage<BookResponse> updateBook(Long id, @Valid BookRequest bookRequest) {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        // Mevcut kitabı güncelle
+
         existingBook.setTitle(bookRequest.getTitle());
         existingBook.setAuthor(bookRequest.getAuthor());
-        //existingBook.setCategory(bookRequest.getCategory());
 
-        // Güncellenen kitabı kaydet
         Book updatedBook = bookRepository.save(existingBook);
 
-        // Güncellenen kitabı Response'e dönüştür
+
         BookResponse updatedBookResponse = BookMapper.mapToResponse(updatedBook);
 
-        // ResponseMessage dön
         return ResponseMessage.<BookResponse>builder()
                 .object(updatedBookResponse)
                 .message("Book updated successfully")
@@ -108,13 +97,38 @@ public class BookService {
                 .build();
     }
 
-    // Kitap silmek için
     public void deleteBook(Long id) {
-        // Kitap bulunmazsa hata fırlat
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
-        // Kitap sil
+
         bookRepository.delete(existingBook);
     }
+
+    // favri kismi icin servis method
+    public void addBookToFavorites(Long userId, Long bookId) {
+        Optional<FavoriteBook> existing = favoriteBookRepository.findByUserIdAndBookId(userId, bookId);
+        if (existing.isPresent()) throw new RuntimeException("Zaten ekli");
+
+        FavoriteBook favorite = new FavoriteBook();
+        favorite.setUser(userRepository.findById(userId).orElseThrow());
+        favorite.setBook(bookRepository.findById(bookId).orElseThrow());
+        favoriteBookRepository.save(favorite);
+    }
+
+    public List<Book> getFavoritesByUser(Long userId) {
+        return favoriteBookRepository.findByUserId(userId)
+                .stream()
+                .map(FavoriteBook::getBook)
+                .collect(Collectors.toList());
+    }
+
+    public void removeBookFromFavorites(Long userId, Long bookId) {
+        FavoriteBook favorite = favoriteBookRepository.findByUserIdAndBookId(userId, bookId)
+                .orElseThrow(() -> new RuntimeException("Favori bulunamadı"));
+
+        favoriteBookRepository.delete(favorite);
+    }
+
+
 }

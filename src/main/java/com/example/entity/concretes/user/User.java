@@ -1,8 +1,5 @@
 package com.example.entity.concretes.user;
 
-
-
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -28,8 +25,6 @@ public class User {
 
     private String password;
 
-    /*@OneToOne
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private UserRole userRole;*/
+
 
 }
