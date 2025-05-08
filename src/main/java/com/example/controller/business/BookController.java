@@ -19,8 +19,6 @@ public class BookController {
 
     private final BookService bookService;
 
-
-
         // Kitapları listele
         @GetMapping
         public ResponseEntity<List<BookResponse>> getAllBooks() {

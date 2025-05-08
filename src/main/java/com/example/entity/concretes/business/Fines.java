@@ -1,4 +1,4 @@
-package com.example.entity.concretes.business;
+/*package com.example.entity.concretes.business;
 
 import com.example.entity.concretes.user.User;
 import jakarta.persistence.*;
@@ -35,4 +35,4 @@ public class Fines {
     private boolean paid;
 
     private LocalDate issueDate;
-}
+}*/
